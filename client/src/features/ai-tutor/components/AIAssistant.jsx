@@ -37,7 +37,7 @@ export function AIAssistant() {
   ];
 
   const handleGenerateQuestions = () => {
-    // Mock question generation
+    // Mock question generation (We will connect this to FastAPI later)
     const mockQuestions = [
       '1. Explain the difference between Stack and Queue data structures with examples.',
       '2. What is the time complexity of Binary Search? Explain with an example.',
@@ -54,7 +54,7 @@ export function AIAssistant() {
   };
 
   const handleEvaluateAnswer = () => {
-    // Mock evaluation
+    // Mock evaluation (We will connect this to FastAPI later)
     const mockEvaluation = {
       score: 85,
       strengths: [
@@ -72,14 +72,15 @@ export function AIAssistant() {
   };
 
   const handleAskDoubt = () => {
-    // Mock doubt resolution
+    // Mock doubt resolution (We will connect this to FastAPI later)
     const mockResponse = `Great question! Let me help you understand this concept:\n\nThe topic you're asking about is fundamental to computer science. Here's a detailed explanation:\n\n1. **Core Concept**: The basic principle revolves around efficient data organization and retrieval.\n\n2. **Key Points**:\n   - Data structures are designed to optimize specific operations\n   - Time and space complexity are important considerations\n   - Different scenarios require different approaches\n\n3. **Practical Example**: Consider a real-world scenario where you need to...\n\n4. **Further Reading**: I recommend checking out the YouTube playlist for this subject for visual explanations.\n\nDo you have any follow-up questions?`;
     setDoubtResponse(mockResponse);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-12">
+    <div className="min-h-screen bg-background transition-colors duration-200 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
@@ -87,23 +88,23 @@ export function AIAssistant() {
               <Brain className="w-8 h-8 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">AI Assistant</h1>
-              <p className="text-gray-600">Generate questions, evaluate answers, and get help with doubts</p>
+              <h1 className="text-3xl font-bold text-foreground">AI Assistant</h1>
+              <p className="text-muted-foreground">Generate questions, evaluate answers, and get help with doubts</p>
             </div>
           </div>
         </div>
 
         <Tabs defaultValue="questions" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="questions" className="gap-2">
+          <TabsList className="grid w-full grid-cols-3 bg-muted text-muted-foreground">
+            <TabsTrigger value="questions" className="gap-2 data-[state=active]:bg-background data-[state=active]:text-foreground">
               <FileText className="w-4 h-4" />
               Question Paper
             </TabsTrigger>
-            <TabsTrigger value="evaluate" className="gap-2">
+            <TabsTrigger value="evaluate" className="gap-2 data-[state=active]:bg-background data-[state=active]:text-foreground">
               <CheckSquare className="w-4 h-4" />
               Evaluate Answer
             </TabsTrigger>
-            <TabsTrigger value="doubt" className="gap-2">
+            <TabsTrigger value="doubt" className="gap-2 data-[state=active]:bg-background data-[state=active]:text-foreground">
               <HelpCircle className="w-4 h-4" />
               Ask Doubt
             </TabsTrigger>
@@ -113,22 +114,22 @@ export function AIAssistant() {
           <TabsContent value="questions">
             <div className="grid lg:grid-cols-2 gap-6">
               <Card className="p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-purple-600" />
+                <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                   Generate Question Paper
                 </h2>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Select Subject
                     </label>
                     <Select value={selectedSubject} onValueChange={setSelectedSubject}>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-background text-foreground border-border">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-card text-foreground border-border">
                         {subjects.map((subject) => (
-                          <SelectItem key={subject} value={subject}>
+                          <SelectItem key={subject} value={subject} className="focus:bg-muted focus:text-foreground">
                             {subject}
                           </SelectItem>
                         ))}
@@ -137,24 +138,24 @@ export function AIAssistant() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Exam Type
                     </label>
                     <Select value={questionPaperType} onValueChange={setQuestionPaperType}>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-background text-foreground border-border">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="mid-term">Mid-Term Exam</SelectItem>
-                        <SelectItem value="end-term">End-Term Exam</SelectItem>
-                        <SelectItem value="quiz">Quiz</SelectItem>
-                        <SelectItem value="practice">Practice Test</SelectItem>
+                      <SelectContent className="bg-card text-foreground border-border">
+                        <SelectItem value="mid-term" className="focus:bg-muted focus:text-foreground">Mid-Term Exam</SelectItem>
+                        <SelectItem value="end-term" className="focus:bg-muted focus:text-foreground">End-Term Exam</SelectItem>
+                        <SelectItem value="quiz" className="focus:bg-muted focus:text-foreground">Quiz</SelectItem>
+                        <SelectItem value="practice" className="focus:bg-muted focus:text-foreground">Practice Test</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Number of Questions
                     </label>
                     <Input
@@ -163,6 +164,7 @@ export function AIAssistant() {
                       max="20"
                       value={numQuestions}
                       onChange={(e) => setNumQuestions(e.target.value)}
+                      className="bg-background text-foreground border-border"
                     />
                   </div>
 
@@ -175,27 +177,27 @@ export function AIAssistant() {
 
               <Card className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-bold text-gray-900">Generated Questions</h3>
+                  <h3 className="font-bold text-foreground">Generated Questions</h3>
                   {generatedQuestions.length > 0 && (
-                    <Button variant="outline" size="sm" className="gap-2">
+                    <Button variant="outline" size="sm" className="gap-2 hover:bg-muted text-foreground border-border">
                       <Download className="w-4 h-4" />
                       Download PDF
                     </Button>
                   )}
                 </div>
                 {generatedQuestions.length > 0 ? (
-                  <div className="space-y-4 max-h-[500px] overflow-y-auto">
+                  <div className="space-y-4 max-h-[500px] overflow-y-auto custom-scrollbar">
                     {generatedQuestions.map((question, index) => (
-                      <div key={index} className="p-4 bg-blue-50 rounded-lg">
-                        <p className="text-gray-900">{question}</p>
+                      <div key={index} className="p-4 bg-muted/50 rounded-lg border border-border">
+                        <p className="text-foreground">{question}</p>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center justify-center h-64 text-gray-400">
-                    <FileText className="w-16 h-16 mb-4" />
-                    <p>No questions generated yet</p>
-                    <p className="text-sm">Configure settings and click generate</p>
+                  <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
+                    <FileText className="w-16 h-16 mb-4 opacity-50" />
+                    <p className="text-foreground font-medium">No questions generated yet</p>
+                    <p className="text-sm mt-1">Configure settings and click generate</p>
                   </div>
                 )}
               </Card>
@@ -206,17 +208,17 @@ export function AIAssistant() {
           <TabsContent value="evaluate">
             <div className="grid lg:grid-cols-2 gap-6">
               <Card className="p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <CheckSquare className="w-5 h-5 text-blue-600" />
+                <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+                  <CheckSquare className="w-5 h-5 text-primary" />
                   Submit Your Answer
                 </h2>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Question
                     </label>
-                    <div className="p-4 bg-gray-50 rounded-lg">
-                      <p className="text-gray-900">
+                    <div className="p-4 bg-muted/50 rounded-lg border border-border">
+                      <p className="text-foreground">
                         Explain the difference between Array and Linked List data structures.
                         Discuss their advantages and disadvantages with time complexity analysis.
                       </p>
@@ -224,7 +226,7 @@ export function AIAssistant() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Your Answer
                     </label>
                     <Textarea
@@ -232,7 +234,7 @@ export function AIAssistant() {
                       rows={10}
                       value={userAnswer}
                       onChange={(e) => setUserAnswer(e.target.value)}
-                      className="resize-none"
+                      className="resize-none bg-background text-foreground border-border"
                     />
                   </div>
 
@@ -244,22 +246,22 @@ export function AIAssistant() {
               </Card>
 
               <Card className="p-6">
-                <h3 className="font-bold text-gray-900 mb-4">AI Evaluation</h3>
+                <h3 className="font-bold text-foreground mb-4">AI Evaluation</h3>
                 {evaluation ? (
                   <div className="space-y-6">
-                    <div className="text-center p-6 bg-gradient-to-br from-green-50 to-blue-50 rounded-lg">
-                      <p className="text-sm text-gray-600 mb-2">Your Score</p>
-                      <p className="text-5xl font-bold text-green-600">{evaluation.score}/100</p>
+                    <div className="text-center p-6 bg-green-500/10 rounded-lg border border-green-500/20">
+                      <p className="text-sm text-muted-foreground mb-2">Your Score</p>
+                      <p className="text-5xl font-bold text-green-600 dark:text-green-400">{evaluation.score}/100</p>
                     </div>
 
                     <div>
-                      <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                        <span className="text-green-600">✓</span> Strengths
+                      <h4 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                        <span className="text-green-600 dark:text-green-400">✓</span> Strengths
                       </h4>
                       <ul className="space-y-2">
                         {evaluation.strengths.map((strength, index) => (
-                          <li key={index} className="flex items-start gap-2 text-sm text-gray-700">
-                            <Badge className="bg-green-100 text-green-800 mt-0.5">+</Badge>
+                          <li key={index} className="flex items-start gap-2 text-sm text-muted-foreground">
+                            <Badge className="bg-green-500/20 text-green-700 dark:text-green-400 mt-0.5 border-none">+</Badge>
                             {strength}
                           </li>
                         ))}
@@ -267,29 +269,29 @@ export function AIAssistant() {
                     </div>
 
                     <div>
-                      <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                        <span className="text-orange-600">!</span> Areas for Improvement
+                      <h4 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                        <span className="text-orange-600 dark:text-orange-400">!</span> Areas for Improvement
                       </h4>
                       <ul className="space-y-2">
                         {evaluation.improvements.map((improvement, index) => (
-                          <li key={index} className="flex items-start gap-2 text-sm text-gray-700">
-                            <Badge className="bg-orange-100 text-orange-800 mt-0.5">→</Badge>
+                          <li key={index} className="flex items-start gap-2 text-sm text-muted-foreground">
+                            <Badge className="bg-orange-500/20 text-orange-700 dark:text-orange-400 mt-0.5 border-none">→</Badge>
                             {improvement}
                           </li>
                         ))}
                       </ul>
                     </div>
 
-                    <div className="p-4 bg-blue-50 rounded-lg">
-                      <h4 className="font-semibold text-gray-900 mb-2">Detailed Feedback</h4>
-                      <p className="text-sm text-gray-700">{evaluation.feedback}</p>
+                    <div className="p-4 bg-muted/50 rounded-lg border border-border">
+                      <h4 className="font-semibold text-foreground mb-2">Detailed Feedback</h4>
+                      <p className="text-sm text-muted-foreground">{evaluation.feedback}</p>
                     </div>
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center justify-center h-64 text-gray-400">
-                    <CheckSquare className="w-16 h-16 mb-4" />
-                    <p>No evaluation yet</p>
-                    <p className="text-sm">Submit your answer to get AI feedback</p>
+                  <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
+                    <CheckSquare className="w-16 h-16 mb-4 opacity-50" />
+                    <p className="text-foreground font-medium">No evaluation yet</p>
+                    <p className="text-sm mt-1">Submit your answer to get AI feedback</p>
                   </div>
                 )}
               </Card>
@@ -300,22 +302,22 @@ export function AIAssistant() {
           <TabsContent value="doubt">
             <div className="grid lg:grid-cols-2 gap-6">
               <Card className="p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <HelpCircle className="w-5 h-5 text-orange-600" />
+                <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+                  <HelpCircle className="w-5 h-5 text-orange-600 dark:text-orange-500" />
                   Ask Your Doubt
                 </h2>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Select Subject
                     </label>
                     <Select value={selectedSubject} onValueChange={setSelectedSubject}>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-background text-foreground border-border">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-card text-foreground border-border">
                         {subjects.map((subject) => (
-                          <SelectItem key={subject} value={subject}>
+                          <SelectItem key={subject} value={subject} className="focus:bg-muted focus:text-foreground">
                             {subject}
                           </SelectItem>
                         ))}
@@ -324,7 +326,7 @@ export function AIAssistant() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Your Question
                     </label>
                     <Textarea
@@ -332,7 +334,7 @@ export function AIAssistant() {
                       rows={8}
                       value={doubt}
                       onChange={(e) => setDoubt(e.target.value)}
-                      className="resize-none"
+                      className="resize-none bg-background text-foreground border-border"
                     />
                   </div>
 
@@ -341,14 +343,14 @@ export function AIAssistant() {
                     Get Answer
                   </Button>
 
-                  <div className="p-4 bg-purple-50 rounded-lg">
+                  <div className="p-4 bg-purple-500/10 rounded-lg border border-purple-500/20">
                     <div className="flex items-start gap-2">
-                      <BookOpen className="w-5 h-5 text-purple-600 mt-0.5" />
+                      <BookOpen className="w-5 h-5 text-purple-600 dark:text-purple-400 mt-0.5" />
                       <div>
-                        <p className="text-sm font-semibold text-gray-900 mb-1">
+                        <p className="text-sm font-semibold text-foreground mb-1">
                           Pro Tip
                         </p>
-                        <p className="text-xs text-gray-600">
+                        <p className="text-xs text-muted-foreground">
                           For better results, include context about what you've already tried
                           and specific concepts you're struggling with.
                         </p>
@@ -359,28 +361,28 @@ export function AIAssistant() {
               </Card>
 
               <Card className="p-6">
-                <h3 className="font-bold text-gray-900 mb-4">AI Response</h3>
+                <h3 className="font-bold text-foreground mb-4">AI Response</h3>
                 {doubtResponse ? (
                   <div className="space-y-4">
-                    <div className="p-4 bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg">
-                      <pre className="whitespace-pre-wrap text-sm text-gray-700 font-sans">
+                    <div className="p-4 bg-muted/30 rounded-lg border border-border">
+                      <pre className="whitespace-pre-wrap text-sm text-foreground font-sans">
                         {doubtResponse}
                       </pre>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm" className="flex-1">
+                      <Button variant="outline" size="sm" className="flex-1 hover:bg-muted text-foreground border-border">
                         Follow-up Question
                       </Button>
-                      <Button variant="outline" size="sm" className="flex-1">
+                      <Button variant="outline" size="sm" className="flex-1 hover:bg-muted text-foreground border-border">
                         View Related Topics
                       </Button>
                     </div>
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center justify-center h-64 text-gray-400">
-                    <HelpCircle className="w-16 h-16 mb-4" />
-                    <p>No response yet</p>
-                    <p className="text-sm">Ask a question to get AI assistance</p>
+                  <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
+                    <HelpCircle className="w-16 h-16 mb-4 opacity-50" />
+                    <p className="text-foreground font-medium">No response yet</p>
+                    <p className="text-sm mt-1">Ask a question to get AI assistance</p>
                   </div>
                 )}
               </Card>

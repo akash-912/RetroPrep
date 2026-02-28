@@ -1,3 +1,6 @@
+import { useSyllabus } from '../features/syllabus/api/useSyllabus'; 
+import { useProgress } from '../features/syllabus/api/useProgress'; 
+
 import { Card } from '../components/ui/Card.jsx';
 import { CircularProgress } from '../components/ui/CircularProgress.jsx';
 import { User, Mail, GraduationCap, Calendar, Award, Book } from 'lucide-react';
@@ -10,11 +13,53 @@ export function ProfilePage({
   userSemester,
   onBranchChange,
   onSemesterChange,
-  subjectsProgress,
 }) {
-  const overallProgress = Math.round(
-    subjectsProgress.reduce((acc, subject) => acc + subject.progress, 0) / subjectsProgress.length
-  );
+
+  // 1. Fetch live data based on the current user selections
+  const { syllabus, loading } = useSyllabus(userBranch, userSemester);
+  const { completedTopics } = useProgress();
+
+  // 2. Calculate dynamic subjects progress array
+  let totalTopicsGlobal = 0;
+  let completedTopicsGlobal = 0;
+  let subjectsCompletedCount = 0;
+
+  const dynamicSubjectsProgress = syllabus ? syllabus.map(subject => {
+    let subjectTotalTopics = 0;
+    let subjectCompletedTopics = 0;
+
+    subject.units.forEach(unit => {
+      unit.topics.forEach(topic => {
+        subjectTotalTopics++;
+        totalTopicsGlobal++;
+        
+        if (completedTopics.has(topic.id)) {
+          subjectCompletedTopics++;
+          completedTopicsGlobal++;
+        }
+      });
+    });
+
+    const progressPercentage = subjectTotalTopics > 0 
+      ? Math.round((subjectCompletedTopics / subjectTotalTopics) * 100) 
+      : 0;
+
+    if (progressPercentage === 100 && subjectTotalTopics > 0) {
+      subjectsCompletedCount++;
+    }
+
+    return {
+      name: subject.name,
+      totalTopics: subjectTotalTopics,
+      completedTopics: subjectCompletedTopics,
+      progress: progressPercentage
+    };
+  }) : [];
+
+  // 3. Calculate overall global progress
+  const overallProgress = totalTopicsGlobal > 0 
+    ? Math.round((completedTopicsGlobal / totalTopicsGlobal) * 100) 
+    : 0;
 
   const branches = [
     'Computer Science Engineering',
@@ -25,18 +70,27 @@ export function ProfilePage({
 
   const semesters = [1, 2, 3, 4, 5, 6, 7, 8];
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex justify-center pt-20 bg-background transition-colors duration-200">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 pb-12">
+    <div className="min-h-screen bg-background transition-colors duration-200 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
         {/* Profile Header */}
-        <Card className="p-8 mb-8 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+        <Card className="p-8 mb-8 bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-900 dark:to-purple-900 text-white border-none shadow-lg">
           <div className="flex flex-col md:flex-row items-center gap-6">
-            <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center text-blue-600">
+            <div className="w-24 h-24 bg-white/10 dark:bg-black/20 rounded-full flex items-center justify-center text-white backdrop-blur-sm border border-white/20">
               <User className="w-12 h-12" />
             </div>
             <div className="flex-1 text-center md:text-left">
               <h1 className="text-3xl font-bold">{userName}</h1>
-              <div className="flex flex-col sm:flex-row gap-4 mt-3 text-blue-100">
+              <div className="flex flex-col sm:flex-row gap-4 mt-3 text-blue-50 dark:text-blue-200">
                 <div className="flex items-center gap-2 justify-center md:justify-start">
                   <Mail className="w-4 h-4" />
                   <span className="text-sm">{userEmail}</span>
@@ -51,11 +105,14 @@ export function ProfilePage({
                 </div>
               </div>
             </div>
-            <div className="bg-white/20 backdrop-blur-sm rounded-lg p-6">
+            <div className="bg-white/10 dark:bg-black/20 backdrop-blur-md rounded-xl p-6 border border-white/20">
               <CircularProgress
                 percentage={overallProgress}
                 size={100}
                 strokeWidth={8}
+                // Overriding default colors for this specific dark header
+                colorClass="text-white"
+                trackColorClass="text-white/20"
               />
             </div>
           </div>
@@ -63,22 +120,22 @@ export function ProfilePage({
 
         {/* Settings Section */}
         <Card className="p-6 mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <Book className="w-5 h-5" />
+          <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+            <Book className="w-5 h-5 text-primary" />
             Academic Settings
           </h2>
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Select Branch
               </label>
               <Select value={userBranch} onValueChange={onBranchChange}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-background text-foreground border-border">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-card text-foreground border-border">
                   {branches.map((branch) => (
-                    <SelectItem key={branch} value={branch}>
+                    <SelectItem key={branch} value={branch} className="focus:bg-muted focus:text-foreground">
                       {branch}
                     </SelectItem>
                   ))}
@@ -86,16 +143,16 @@ export function ProfilePage({
               </Select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Select Semester
               </label>
               <Select value={userSemester.toString()} onValueChange={(val) => onSemesterChange(Number(val))}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-background text-foreground border-border">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-card text-foreground border-border">
                   {semesters.map((sem) => (
-                    <SelectItem key={sem} value={sem.toString()}>
+                    <SelectItem key={sem} value={sem.toString()} className="focus:bg-muted focus:text-foreground">
                       Semester {sem}
                     </SelectItem>
                   ))}
@@ -107,66 +164,72 @@ export function ProfilePage({
 
         {/* Progress Section */}
         <div className="mb-6 flex items-center gap-2">
-          <Award className="w-6 h-6 text-blue-600" />
-          <h2 className="text-2xl font-bold text-gray-900">
+          <Award className="w-6 h-6 text-primary" />
+          <h2 className="text-2xl font-bold text-foreground">
             Subject-wise Progress
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {subjectsProgress.map((subject, index) => (
-            <Card key={index} className="p-6 hover:shadow-lg transition-shadow">
-              <div className="flex flex-col items-center">
-                <CircularProgress
-                  percentage={subject.progress}
-                  size={140}
-                  strokeWidth={10}
-                  label={subject.name}
-                />
-                <div className="mt-4 w-full space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Completed Topics:</span>
-                    <span className="font-semibold text-gray-900">
-                      {subject.completedTopics}/{subject.totalTopics}
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-blue-600 h-2 rounded-full transition-all duration-500"
-                      style={{ width: `${subject.progress}%` }}
-                    />
+        {dynamicSubjectsProgress.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {dynamicSubjectsProgress.map((subject, index) => (
+              <Card key={index} className="p-6 hover:shadow-md transition-shadow border-border">
+                <div className="flex flex-col items-center">
+                  <CircularProgress
+                    percentage={subject.progress}
+                    size={140}
+                    strokeWidth={10}
+                    label={subject.name}
+                  />
+                  <div className="mt-4 w-full space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Completed Topics:</span>
+                      <span className="font-semibold text-foreground">
+                        {subject.completedTopics}/{subject.totalTopics}
+                      </span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+                      <div
+                        className="bg-primary h-2 rounded-full transition-all duration-500"
+                        style={{ width: `${subject.progress}%` }}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Card>
-          ))}
-        </div>
+              </Card>
+            ))}
+          </div>
+        ) : (
+           <Card className="p-12 text-center text-muted-foreground bg-muted/20 border-border">
+             No subjects found for this Branch and Semester combination.
+           </Card>
+        )}
 
         {/* Statistics */}
         <Card className="p-6 mt-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Your Statistics</h2>
+          <h2 className="text-xl font-bold text-foreground mb-6">Your Statistics</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="text-center">
-              <p className="text-3xl font-bold text-blue-600">
-                {subjectsProgress.reduce((acc, s) => acc + s.completedTopics, 0)}
+            <div className="text-center p-4 bg-muted/30 rounded-xl border border-border">
+              <p className="text-3xl font-bold text-primary">
+                {completedTopicsGlobal}
               </p>
-              <p className="text-sm text-gray-600 mt-1">Topics Completed</p>
+              <p className="text-sm text-muted-foreground mt-1">Topics Completed</p>
             </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-purple-600">
-                {subjectsProgress.reduce((acc, s) => acc + s.totalTopics, 0)}
+            <div className="text-center p-4 bg-muted/30 rounded-xl border border-border">
+              <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">
+                {totalTopicsGlobal}
               </p>
-              <p className="text-sm text-gray-600 mt-1">Total Topics</p>
+              <p className="text-sm text-muted-foreground mt-1">Total Topics</p>
             </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-green-600">{overallProgress}%</p>
-              <p className="text-sm text-gray-600 mt-1">Overall Progress</p>
+            <div className="text-center p-4 bg-muted/30 rounded-xl border border-border">
+              <p className="text-3xl font-bold text-green-600 dark:text-green-500">{overallProgress}%</p>
+              <p className="text-sm text-muted-foreground mt-1">Overall Progress</p>
             </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-orange-600">
-                {subjectsProgress.filter((s) => s.progress === 100).length}
+            <div className="text-center p-4 bg-muted/30 rounded-xl border border-border">
+              <p className="text-3xl font-bold text-orange-600 dark:text-orange-500">
+                {subjectsCompletedCount}
               </p>
-              <p className="text-sm text-gray-600 mt-1">Subjects Completed</p>
+              <p className="text-sm text-muted-foreground mt-1">Subjects Completed</p>
             </div>
           </div>
         </Card>
