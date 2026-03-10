@@ -202,7 +202,10 @@ function AppContent() {
           element={
             isRecoveryMode ? <Navigate to="/update-password" replace /> : (
               <ProtectedRoute>
-                <AIAssistant />
+                <AIAssistant 
+                  userBranch={userBranch} 
+                  userSemester={userSemester} 
+                />
               </ProtectedRoute>
             )
           } 

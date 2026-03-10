@@ -15,13 +15,14 @@ import {
   BookOpen
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../components/ui/Select.jsx';
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; 
+import { useSyllabus } from '../../../features/syllabus/api/useSyllabus.js';
 import { useQuestionGenerator } from '../../../hooks/useQuestionGenerator.jsx';
 import { useAnswerEvaluator } from '../../../hooks/useAnswerEvaluator.jsx';
 import { useDoubtSolver } from '../../../hooks/useDoubtSolver.jsx';
 
-export function AIAssistant() {
-  const [selectedSubject, setSelectedSubject] = useState('Data Structures');
+export function AIAssistant({ userBranch, userSemester }) {
+  const [selectedSubject, setSelectedSubject] = useState('');
   const [questionPaperType, setQuestionPaperType] = useState('mid-term');
   const [numQuestions, setNumQuestions] = useState('10');
   const [userAnswer, setUserAnswer] = useState('');
@@ -30,19 +31,17 @@ export function AIAssistant() {
   const [evaluation, setEvaluation] = useState(null);
   const [doubtResponse, setDoubtResponse] = useState('');
   const [evalQuestion, setEvalQuestion] = useState('Explain the difference between Array and Linked List data structures. Discuss their advantages and disadvantages with time complexity analysis.');
+  const { syllabus, loading: loadingSyllabus } = useSyllabus(userBranch, userSemester);
 
   const { generateQuestions, isLoading: isGenerating, error: generationError } = useQuestionGenerator();
   const { evaluateAnswer, isLoading: isEvaluating, error: evaluationError } = useAnswerEvaluator();
   const { solveDoubt, isLoading: isSolvingDoubt, error: doubtError } = useDoubtSolver();
 
-  const subjects = [
-    'Data Structures and Algorithms',
-    'Database Management Systems',
-    'Operating Systems',
-    'Computer Networks',
-    'Software Engineering',
-    'Web Technologies',
-  ];
+  useEffect(() => {
+    if (syllabus && syllabus.length > 0) {
+      setSelectedSubject(syllabus[0].name);
+    }
+  }, [syllabus]);
 
   const handleGenerateQuestions = async () => {
     const questions = await generateQuestions(selectedSubject, questionPaperType, parseInt(numQuestions));
@@ -116,11 +115,16 @@ export function AIAssistant() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-card text-foreground border-border">
-                        {subjects.map((subject) => (
-                          <SelectItem key={subject} value={subject} className="focus:bg-muted focus:text-foreground">
-                            {subject}
-                          </SelectItem>
-                        ))}
+                        {/* Show a loading state if fetching, otherwise map the real subjects */}
+                        {loadingSyllabus ? (
+                          <SelectItem value="loading" disabled>Loading subjects...</SelectItem>
+                        ) : (
+                          syllabus?.map((subject) => (
+                            <SelectItem key={subject.id} value={subject.name} className="focus:bg-muted focus:text-foreground">
+                              {subject.name}
+                            </SelectItem>
+                          ))
+                        )}
                       </SelectContent>
                     </Select>
                   </div>
@@ -318,11 +322,16 @@ export function AIAssistant() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-card text-foreground border-border">
-                        {subjects.map((subject) => (
-                          <SelectItem key={subject} value={subject} className="focus:bg-muted focus:text-foreground">
-                            {subject}
-                          </SelectItem>
-                        ))}
+                        {/* Show a loading state if fetching, otherwise map the real subjects */}
+                        {loadingSyllabus ? (
+                          <SelectItem value="loading" disabled>Loading subjects...</SelectItem>
+                        ) : (
+                          syllabus?.map((subject) => (
+                            <SelectItem key={subject.id} value={subject.name} className="focus:bg-muted focus:text-foreground">
+                              {subject.name}
+                            </SelectItem>
+                          ))
+                        )}
                       </SelectContent>
                     </Select>
                   </div>
