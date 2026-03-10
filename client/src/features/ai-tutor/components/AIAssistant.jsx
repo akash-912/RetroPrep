@@ -4,18 +4,21 @@ import { Textarea } from '../../../components/ui/TextArea.jsx';
 import { Input } from '../../../components/ui/Input.jsx';
 import { Badge } from '../../../components/ui/Badge.jsx';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../components/ui/Tab.jsx';
-import { 
-  Brain, 
-  FileText, 
-  CheckSquare, 
-  HelpCircle, 
-  Send, 
+import {
+  Brain,
+  FileText,
+  CheckSquare,
+  HelpCircle,
+  Send,
   Download,
   Sparkles,
   BookOpen
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../components/ui/Select.jsx';
 import { useState } from 'react';
+import { useQuestionGenerator } from '../../../hooks/useQuestionGenerator.jsx';
+import { useAnswerEvaluator } from '../../../hooks/useAnswerEvaluator.jsx';
+import { useDoubtSolver } from '../../../hooks/useDoubtSolver.jsx';
 
 export function AIAssistant() {
   const [selectedSubject, setSelectedSubject] = useState('Data Structures');
@@ -26,6 +29,11 @@ export function AIAssistant() {
   const [generatedQuestions, setGeneratedQuestions] = useState([]);
   const [evaluation, setEvaluation] = useState(null);
   const [doubtResponse, setDoubtResponse] = useState('');
+  const [evalQuestion, setEvalQuestion] = useState('Explain the difference between Array and Linked List data structures. Discuss their advantages and disadvantages with time complexity analysis.');
+
+  const { generateQuestions, isLoading: isGenerating, error: generationError } = useQuestionGenerator();
+  const { evaluateAnswer, isLoading: isEvaluating, error: evaluationError } = useAnswerEvaluator();
+  const { solveDoubt, isLoading: isSolvingDoubt, error: doubtError } = useDoubtSolver();
 
   const subjects = [
     'Data Structures and Algorithms',
@@ -36,51 +44,31 @@ export function AIAssistant() {
     'Web Technologies',
   ];
 
-  const handleGenerateQuestions = () => {
-    // Mock question generation (We will connect this to FastAPI later)
-    const mockQuestions = [
-      '1. Explain the difference between Stack and Queue data structures with examples.',
-      '2. What is the time complexity of Binary Search? Explain with an example.',
-      '3. Describe the working of Quick Sort algorithm with a suitable example.',
-      '4. What are AVL trees? How do they maintain balance?',
-      '5. Explain the concept of Hashing and collision resolution techniques.',
-      '6. Write a program to reverse a linked list.',
-      '7. Compare BFS and DFS traversal algorithms.',
-      '8. What is Dynamic Programming? Explain with an example.',
-      '9. Describe the properties of a Binary Search Tree.',
-      '10. Explain the concept of Graph coloring problem.',
-    ];
-    setGeneratedQuestions(mockQuestions.slice(0, parseInt(numQuestions)));
+  const handleGenerateQuestions = async () => {
+    const questions = await generateQuestions(selectedSubject, questionPaperType, parseInt(numQuestions));
+    if (questions) {
+      setGeneratedQuestions(questions);
+    }
   };
 
-  const handleEvaluateAnswer = () => {
-    // Mock evaluation (We will connect this to FastAPI later)
-    const mockEvaluation = {
-      score: 85,
-      strengths: [
-        'Good understanding of core concepts',
-        'Clear explanation with examples',
-        'Proper use of technical terminology',
-      ],
-      improvements: [
-        'Could include more detailed examples',
-        'Add time complexity analysis',
-      ],
-      feedback: 'Your answer demonstrates a solid understanding of the topic. The explanation is clear and well-structured. Consider adding more specific examples and discussing edge cases for a more comprehensive answer.',
-    };
-    setEvaluation(mockEvaluation);
+  const handleEvaluateAnswer = async () => {
+    const result = await evaluateAnswer(evalQuestion, userAnswer);
+    if (result) {
+      setEvaluation(result);
+    }
   };
 
-  const handleAskDoubt = () => {
-    // Mock doubt resolution (We will connect this to FastAPI later)
-    const mockResponse = `Great question! Let me help you understand this concept:\n\nThe topic you're asking about is fundamental to computer science. Here's a detailed explanation:\n\n1. **Core Concept**: The basic principle revolves around efficient data organization and retrieval.\n\n2. **Key Points**:\n   - Data structures are designed to optimize specific operations\n   - Time and space complexity are important considerations\n   - Different scenarios require different approaches\n\n3. **Practical Example**: Consider a real-world scenario where you need to...\n\n4. **Further Reading**: I recommend checking out the YouTube playlist for this subject for visual explanations.\n\nDo you have any follow-up questions?`;
-    setDoubtResponse(mockResponse);
+  const handleAskDoubt = async () => {
+    const answer = await solveDoubt(selectedSubject, doubt);
+    if (answer) {
+      setDoubtResponse(answer);
+    }
   };
 
   return (
     <div className="min-h-screen bg-background transition-colors duration-200 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
+
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
@@ -168,10 +156,17 @@ export function AIAssistant() {
                     />
                   </div>
 
-                  <Button onClick={handleGenerateQuestions} className="w-full gap-2">
-                    <Sparkles className="w-4 h-4" />
-                    Generate Questions
+                  <Button
+                    onClick={handleGenerateQuestions}
+                    className="w-full gap-2"
+                    disabled={isGenerating}
+                  >
+                    <Sparkles className={`w-4 h-4 ${isGenerating ? 'animate-pulse' : ''}`} />
+                    {isGenerating ? 'Generating...' : 'Generate Questions'}
                   </Button>
+                  {generationError && (
+                    <p className="text-sm text-red-500 mt-2">{generationError}</p>
+                  )}
                 </div>
               </Card>
 
@@ -187,9 +182,12 @@ export function AIAssistant() {
                 </div>
                 {generatedQuestions.length > 0 ? (
                   <div className="space-y-4 max-h-[500px] overflow-y-auto custom-scrollbar">
-                    {generatedQuestions.map((question, index) => (
+                    {generatedQuestions.map((q, index) => (
                       <div key={index} className="p-4 bg-muted/50 rounded-lg border border-border">
-                        <p className="text-foreground">{question}</p>
+                        <p className="text-foreground font-semibold mb-2">{index + 1}. {q.questionText}</p>
+                        <div className="pl-4 border-l-2 border-primary/50">
+                          <p className="text-sm text-muted-foreground"><span className="font-medium text-foreground">Answer/Explanation:</span> {q.correctAnswer}</p>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -217,12 +215,13 @@ export function AIAssistant() {
                     <label className="block text-sm font-medium text-foreground mb-2">
                       Question
                     </label>
-                    <div className="p-4 bg-muted/50 rounded-lg border border-border">
-                      <p className="text-foreground">
-                        Explain the difference between Array and Linked List data structures.
-                        Discuss their advantages and disadvantages with time complexity analysis.
-                      </p>
-                    </div>
+                    <Textarea
+                      rows={4}
+                      value={evalQuestion}
+                      onChange={(e) => setEvalQuestion(e.target.value)}
+                      placeholder="Type or paste the question here..."
+                      className="resize-none bg-background text-foreground border-border"
+                    />
                   </div>
 
                   <div>
@@ -238,10 +237,13 @@ export function AIAssistant() {
                     />
                   </div>
 
-                  <Button onClick={handleEvaluateAnswer} className="w-full gap-2">
-                    <CheckSquare className="w-4 h-4" />
-                    Evaluate Answer
+                  <Button onClick={handleEvaluateAnswer} className="w-full gap-2" disabled={isEvaluating}>
+                    <CheckSquare className={`w-4 h-4 ${isEvaluating ? 'animate-pulse' : ''}`} />
+                    {isEvaluating ? 'Evaluating...' : 'Evaluate Answer'}
                   </Button>
+                  {evaluationError && (
+                    <p className="text-sm text-red-500 mt-2">{evaluationError}</p>
+                  )}
                 </div>
               </Card>
 
@@ -338,10 +340,13 @@ export function AIAssistant() {
                     />
                   </div>
 
-                  <Button onClick={handleAskDoubt} className="w-full gap-2">
-                    <Send className="w-4 h-4" />
-                    Get Answer
+                  <Button onClick={handleAskDoubt} className="w-full gap-2" disabled={isSolvingDoubt}>
+                    <Send className={`w-4 h-4 ${isSolvingDoubt ? 'animate-pulse' : ''}`} />
+                    {isSolvingDoubt ? 'Getting Answer...' : 'Get Answer'}
                   </Button>
+                  {doubtError && (
+                    <p className="text-sm text-red-500 mt-2">{doubtError}</p>
+                  )}
 
                   <div className="p-4 bg-purple-500/10 rounded-lg border border-purple-500/20">
                     <div className="flex items-start gap-2">
