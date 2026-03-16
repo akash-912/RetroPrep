@@ -1,7 +1,6 @@
 import { usePlanner } from "../context/PlannerContext.jsx";
 
 export const PlannerSidebar = ({ isOpen }) => {
-
   const {
     tasks,
     newTask,
@@ -15,10 +14,10 @@ export const PlannerSidebar = ({ isOpen }) => {
 
   return (
     <div
-      className={`fixed mt-16  overflow-y-auto pb-2 top-0 right-0 h-[calc(100vh-4rem)] w-80
+      className={`fixed mt-16 overflow-y-auto pb-2 top-0 right-0 h-[calc(100vh-4rem)] w-full sm:w-80
       bg-white dark:bg-gray-900
       text-gray-800 dark:text-gray-100
-      shadow-lg transform transition-all duration-300 z-50
+      shadow-lg transform transition-all duration-300 z-40
       ${isOpen ? "translate-x-0" : "translate-x-full"}`}
     >
 
@@ -35,7 +34,7 @@ export const PlannerSidebar = ({ isOpen }) => {
       <div className="p-4">
 
         {/* Add Task */}
-        <div className="flex gap-2 mb-4">
+        <div className="flex flex-col sm:flex-row gap-2 mb-4">
           <input
             value={newTask}
             onChange={(e) => setNewTask(e.target.value)}
@@ -44,13 +43,13 @@ export const PlannerSidebar = ({ isOpen }) => {
             bg-white dark:bg-gray-800
             text-gray-800 dark:text-gray-100
             placeholder-gray-400 dark:placeholder-gray-500
-            p-2 flex-1 rounded"
+            p-2 flex-1 rounded min-w-0"
           />
 
           <button
             onClick={addTask}
             className="bg-blue-600 hover:bg-blue-700
-            text-white px-3 rounded transition"
+            text-white px-3 py-2 rounded transition w-full sm:w-auto"
           >
             Add
           </button>
@@ -80,7 +79,7 @@ export const PlannerSidebar = ({ isOpen }) => {
               p-2 rounded"
             >
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 min-w-0">
 
                 <input
                   type="checkbox"
@@ -96,7 +95,7 @@ export const PlannerSidebar = ({ isOpen }) => {
                       : "text-gray-800 dark:text-gray-100"
                   }
                 >
-                  {task.task_text}
+                  <span className="truncate block max-w-full">{task.task_text}</span>
                 </span>
 
               </div>

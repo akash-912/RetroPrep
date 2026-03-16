@@ -98,7 +98,7 @@ export function SyllabusPage({ userBranch, userSemester }) {
           <div className="grid md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">Select Branch</label>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {branches.map((branch) => (
                   <Button
                     key={branch.id}
@@ -115,7 +115,7 @@ export function SyllabusPage({ userBranch, userSemester }) {
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">Select Semester</label>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-4 sm:grid-cols-8 md:grid-cols-4 gap-2">
                 {[1, 2, 3, 4, 5, 6, 7, 8].map((sem) => (
                   <Button
                     key={sem}
@@ -280,10 +280,10 @@ export function SyllabusPage({ userBranch, userSemester }) {
                                   return (
                                     <div
                                       key={topic.id}
-                                      className="flex items-center justify-between p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors cursor-pointer border border-transparent hover:border-border group"
+                                      className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors cursor-pointer border border-transparent hover:border-border group"
                                       onClick={() => handleTopicToggle(topic.id)}
                                     >
-                                      <div className="flex items-center gap-3 flex-1 overflow-hidden">
+                                      <div className="flex items-center gap-3 flex-1 overflow-hidden min-w-0">
                                         {/* Status Icon */}
                                         {isTopicCompleted ? (
                                           <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-500 shrink-0" />
@@ -292,7 +292,7 @@ export function SyllabusPage({ userBranch, userSemester }) {
                                         )}
                                         
                                         {/* Topic Title */}
-                                        <span className={`truncate ${isTopicCompleted ? 'text-muted-foreground line-through' : 'text-foreground font-medium'} ml-4 mr-4`}>
+                                        <span className={`truncate ${isTopicCompleted ? 'text-muted-foreground line-through' : 'text-foreground font-medium'} ml-2 sm:ml-4 mr-2 sm:mr-4`}>
                                           {topic.title}
                                         </span>
 
@@ -313,7 +313,7 @@ export function SyllabusPage({ userBranch, userSemester }) {
 
                                       {/* Completed Badge */}
                                       {isTopicCompleted && (
-                                        <Badge className="bg-green-500/10 text-green-600 dark:text-green-400 border-none ml-2 shrink-0">
+                                        <Badge className="bg-green-500/10 text-green-600 dark:text-green-400 border-none sm:ml-2 shrink-0 self-start sm:self-auto">
                                           Completed
                                         </Badge>
                                       )}

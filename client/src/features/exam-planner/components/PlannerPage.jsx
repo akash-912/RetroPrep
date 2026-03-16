@@ -113,7 +113,7 @@ export function PlannerPage({ userSemester , userBranch }) {
 
   if (loadingSyllabus || loadingPlanner) {
     return (
-      <div className="min-h-screen flex justify-center pt-20 bg-background transition-colors duration-200">
+      <div className="min-h-screen flex justify-center pt-20 bg-background transition-colors duration-200 px-4 sm:px-6 lg:px-8">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
@@ -125,12 +125,12 @@ export function PlannerPage({ userSemester , userBranch }) {
         
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
+          <div className="flex items-start sm:items-center gap-3 mb-2">
             <div className="p-3 bg-primary rounded-lg">
               <CalendarDays className="w-8 h-8 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-foreground">Exam Planner</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Exam Planner</h1>
               <p className="text-muted-foreground">Plan your studies for Mid-Sem and End-Sem exams</p>
             </div>
           </div>
@@ -139,7 +139,7 @@ export function PlannerPage({ userSemester , userBranch }) {
         {/* Exam Selection */}
         <Card className="p-6 mb-8">
           <h2 className="text-lg font-bold text-foreground mb-4">Select Exam</h2>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             {['Mid-Sem 1', 'Mid-Sem 2', 'End-Sem'].map((examName) => (
               <Button
                 key={examName}
@@ -199,9 +199,9 @@ export function PlannerPage({ userSemester , userBranch }) {
                           <AccordionItem value={subjectName} className="border-border">
                             <AccordionTrigger className="hover:no-underline">
                               <div className="flex items-center justify-between w-full pr-4">
-                                <div className="flex items-center gap-2">
-                                  <BookOpen className="w-4 h-4 text-primary" />
-                                  <span className="font-semibold text-foreground">{subjectName}</span>
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <BookOpen className="w-4 h-4 text-primary shrink-0" />
+                                  <span className="font-semibold text-foreground truncate">{subjectName}</span>
                                 </div>
                                 <Badge variant="secondary" className="bg-muted text-muted-foreground">{topics.length} topics</Badge>
                               </div>
@@ -215,8 +215,8 @@ export function PlannerPage({ userSemester , userBranch }) {
                                       checked={draftSelectedTopics.includes(topic.id)}
                                       onCheckedChange={() => handleTopicToggle(topic.id)}
                                     />
-                                    <label htmlFor={`topic-${topic.id}`} className="flex-1 cursor-pointer">
-                                      <p className="font-medium text-foreground">{topic.name}</p>
+                                    <label htmlFor={`topic-${topic.id}`} className="flex-1 cursor-pointer min-w-0">
+                                      <p className="font-medium text-foreground truncate">{topic.name}</p>
                                       <Badge variant="secondary" className="text-xs mt-1 bg-background text-muted-foreground">
                                         {topic.unitName}
                                       </Badge>
@@ -263,8 +263,8 @@ export function PlannerPage({ userSemester , userBranch }) {
                                 onCheckedChange={() => handleToggleComplete(topic.id)}
                                 className="mt-1"
                               />
-                              <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-2">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex flex-wrap items-center gap-2 mb-2">
                                   <Badge className={isCompleted ? 'bg-muted text-muted-foreground' : 'bg-primary text-primary-foreground'}>
                                     Day {index + 1}
                                   </Badge>
