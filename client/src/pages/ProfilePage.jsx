@@ -111,7 +111,7 @@ export function ProfilePage({
               <div className="flex flex-col sm:flex-row gap-4 mt-3 text-blue-50 dark:text-blue-200">
                 <div className="flex items-center gap-2 justify-center md:justify-start">
                   <Mail className="w-4 h-4" />
-                  <span className="text-sm">{userEmail}</span>
+                  <span className="text-sm truncate max-w-full">{userEmail}</span>
                 </div>
                 <div className="flex items-center gap-2 justify-center md:justify-start">
                   <GraduationCap className="w-4 h-4" />
@@ -123,7 +123,7 @@ export function ProfilePage({
                 </div>
               </div>
             </div>
-            <div className="bg-white/10 dark:bg-black/20 backdrop-blur-md rounded-xl p-6 border border-white/20">
+            <div className="bg-white/10 dark:bg-black/20 backdrop-blur-md rounded-xl p-4 sm:p-6 border border-white/20">
               <CircularProgress
                 percentage={overallProgress}
                 size={100}
@@ -234,7 +234,7 @@ export function ProfilePage({
         {/* Statistics */}
         <Card className="p-6 mt-8">
           <h2 className="text-xl font-bold text-foreground mb-6">Your Statistics</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
             <div className="text-center p-4 bg-muted/30 rounded-xl border border-border">
               <p className="text-3xl font-bold text-primary">
                 {completedTopicsGlobal}

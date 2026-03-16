@@ -82,7 +82,7 @@ export function Dashboard({ userName, userBranch, userSemester, onNavigate }) {
 
   if (loadingSyllabus) {
     return (
-      <div className="min-h-screen flex justify-center pt-20 bg-background transition-colors duration-200">
+      <div className="min-h-screen flex justify-center pt-20 bg-background transition-colors duration-200 px-4 sm:px-6 lg:px-8">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
@@ -94,7 +94,7 @@ export function Dashboard({ userName, userBranch, userSemester, onNavigate }) {
         
         {/* Welcome Section */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
             Welcome back, {userName}! 👋
           </h1>
           <p className="text-muted-foreground mt-2">
@@ -179,12 +179,12 @@ export function Dashboard({ userName, userBranch, userSemester, onNavigate }) {
                     if (!details) return null;
                     
                     return (
-                      <div key={index} className="flex items-center justify-between p-4 bg-muted/50 rounded-lg border border-border">
-                        <div className="flex-1">
+                      <div key={index} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-4 bg-muted/50 rounded-lg border border-border">
+                        <div className="flex-1 min-w-0">
                           <p className="font-semibold text-foreground">{details.subjectName}</p>
-                          <p className="text-sm text-muted-foreground">{details.topicName}</p>
+                          <p className="text-sm text-muted-foreground truncate">{details.topicName}</p>
                         </div>
-                        <div className="text-right">
+                        <div className="text-left sm:text-right shrink-0">
                           <p className="text-sm font-semibold text-green-600 dark:text-green-400">+ Completed</p>
                           <p className="text-xs text-muted-foreground opacity-80">{getRelativeTime(activity.completed_at)}</p>
                         </div>

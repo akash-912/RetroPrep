@@ -160,8 +160,8 @@ export function AdminUploadPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-6 flex items-center justify-center">
-      <Card className="w-full max-w-4xl p-8 border-border bg-card"> {/* Increased width for more panels */}
+    <div className="min-h-screen bg-background text-foreground px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex items-start justify-center">
+      <Card className="w-full max-w-4xl p-4 sm:p-6 lg:p-8 border-border bg-card">
         <div className="flex items-center gap-3 mb-6">
           <div className="p-3 bg-primary/10 rounded-lg">
             <UploadCloud className="w-8 h-8 text-primary" />
@@ -179,7 +179,7 @@ export function AdminUploadPage() {
           </TabsList>
 
           {/* Global Selectors */}
-          <div className="grid grid-cols-2 gap-4 mb-6 p-4 bg-muted/30 rounded-lg border border-border">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 p-4 bg-muted/30 rounded-lg border border-border">
             <div className="space-y-2">
               <Label>Branch</Label>
               <Select value={branch} onValueChange={setBranch}>
@@ -223,9 +223,9 @@ export function AdminUploadPage() {
                   <SelectTrigger><SelectValue placeholder="Select Subject" /></SelectTrigger>
                   <SelectContent>{syllabus?.map(s => <SelectItem key={s.id} value={s.name}>{s.name}</SelectItem>)}</SelectContent>
                 </Select>
-                <div className="grid grid-cols-4 gap-2">
-                  <Input type="number" placeholder="#" className="col-span-1" value={unitNumber} onChange={(e) => setUnitNumber(e.target.value)} />
-                  <Input placeholder="Unit Title" className="col-span-3" value={unitTitle} onChange={(e) => setUnitTitle(e.target.value)} />
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
+                  <Input type="number" placeholder="#" className="sm:col-span-1" value={unitNumber} onChange={(e) => setUnitNumber(e.target.value)} />
+                  <Input placeholder="Unit Title" className="sm:col-span-3" value={unitTitle} onChange={(e) => setUnitTitle(e.target.value)} />
                 </div>
                 <Button onClick={handleAddUnit} size="sm" variant="outline" className="w-full" disabled={loading}>Add Unit</Button>
               </div>
@@ -276,7 +276,7 @@ export function AdminUploadPage() {
               </Select>
             </div>
             {/* ... Rest of upload form (Type, Title, File) ... */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2"><Label>Type</Label><Select value={type} onValueChange={setType}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="Note">Notes / PDF</SelectItem><SelectItem value="PYQ">PYQ</SelectItem></SelectContent></Select></div>
               <div className="space-y-2"><Label>Title</Label><Input placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} /></div>
             </div>

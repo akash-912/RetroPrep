@@ -15,6 +15,7 @@ import { PlannerPage } from './features/exam-planner/components/PlannerPage.jsx'
 import { AdminUploadPage } from './pages/AdminUploadPage.jsx';
 import { UpdatePasswordPage } from './features/auth/components/UpdatePasswordPage.jsx';
 import { PlannerSidebar } from './features/daily-planner/components/PlannerSidebar.jsx';
+import { SafeSpacePage } from './features/community/components/SafeSpacePage.jsx';
 
 function AppContent() {
   const { user, logOut } = useAuth();
@@ -81,6 +82,7 @@ function AppContent() {
     // Block navigation if locked
     if (isRecoveryMode) return; 
     navigate(`/${page}`);
+    setIsPlannerOpen(false);
   };
 
   const handleLogout = async () => {
@@ -91,7 +93,7 @@ function AppContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       
       {/* HIDE NAVBAR: If in recovery mode, NO navigation allowed */}
       {user && location.pathname !== '/' && !isRecoveryMode && (
@@ -195,6 +197,16 @@ function AppContent() {
                   userBranch={userBranch} 
                   userSemester={userSemester} 
                 />
+              </ProtectedRoute>
+            )
+          } 
+        />
+        <Route 
+          path="/safe-space" 
+          element={
+            isRecoveryMode ? <Navigate to="/update-password" replace /> : (
+              <ProtectedRoute>
+                <SafeSpacePage userName={userName} />
               </ProtectedRoute>
             )
           } 

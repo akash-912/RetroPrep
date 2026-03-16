@@ -70,28 +70,28 @@ export function AIAssistant({ userBranch, userSemester }) {
 
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
+          <div className="flex items-start sm:items-center gap-3 mb-2">
             <div className="p-3 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg">
               <Brain className="w-8 h-8 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-foreground">AI Assistant</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold text-foreground">AI Assistant</h1>
               <p className="text-muted-foreground">Generate questions, evaluate answers, and get help with doubts</p>
             </div>
           </div>
         </div>
 
         <Tabs defaultValue="questions" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 bg-muted text-muted-foreground">
-            <TabsTrigger value="questions" className="gap-2 data-[state=active]:bg-background data-[state=active]:text-foreground">
+          <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 bg-muted text-muted-foreground">
+            <TabsTrigger value="questions" className="gap-2 justify-start sm:justify-center data-[state=active]:bg-background data-[state=active]:text-foreground">
               <FileText className="w-4 h-4" />
               Question Paper
             </TabsTrigger>
-            <TabsTrigger value="evaluate" className="gap-2 data-[state=active]:bg-background data-[state=active]:text-foreground">
+            <TabsTrigger value="evaluate" className="gap-2 justify-start sm:justify-center data-[state=active]:bg-background data-[state=active]:text-foreground">
               <CheckSquare className="w-4 h-4" />
               Evaluate Answer
             </TabsTrigger>
-            <TabsTrigger value="doubt" className="gap-2 data-[state=active]:bg-background data-[state=active]:text-foreground">
+            <TabsTrigger value="doubt" className="gap-2 justify-start sm:justify-center data-[state=active]:bg-background data-[state=active]:text-foreground">
               <HelpCircle className="w-4 h-4" />
               Ask Doubt
             </TabsTrigger>
