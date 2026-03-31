@@ -7,6 +7,7 @@ import ProtectedRoute from './components/ProtectedRoute.jsx';
 // Page Imports
 import { LoginPage } from './features/auth/components/LoginForm.jsx';
 import { Dashboard } from './pages/Dashboard.jsx';
+import { LandingPage } from './pages/LandingPage.jsx';
 import { ProfilePage } from './pages/ProfilePage.jsx';
 import { SyllabusPage } from './pages/SyllabusPage.jsx';
 import { AIAssistant } from './features/ai-tutor/components/AIAssistant.jsx';
@@ -83,7 +84,8 @@ function AppContent() {
   if (!user) {
     return (
       <Routes>
-        <Route path="/" element={<LoginPage />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     );

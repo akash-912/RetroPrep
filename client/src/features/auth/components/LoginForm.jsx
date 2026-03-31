@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { useAuth } from '../hooks/useAuth'; // Adjust path if needed
-import { supabase } from '../../../lib/supabase'; // Adjust path to your supabase client
+import { useAuth } from '../hooks/useAuth'; 
+import { supabase } from '../../../lib/supabase'; 
 import { Button } from '../../../components/ui/Button.jsx';
 import { Input } from '../../../components/ui/Input.jsx';
 import { Label } from '../../../components/ui/Label.jsx';
-import { Card } from '../../../components/ui/Card.jsx';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { 
   Select, 
@@ -13,10 +12,10 @@ import {
   SelectTrigger, 
   SelectValue 
 } from '../../../components/ui/Select.jsx';
-import { useBranches } from '../../syllabus/hooks/useBranches'; // Adjust path
+import { useBranches } from '../../syllabus/hooks/useBranches';
+import { GalleryVerticalEnd, Sparkles, Loader2 } from 'lucide-react';
 
 export function LoginPage() {
-  // Modes: 'login' | 'signup' | 'forgot'
   const location = useLocation();
   const [mode, setMode] = useState('login');
   
@@ -24,11 +23,9 @@ export function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   
-  // Sign Up Extras
   const [branch, setBranch] = useState('');
   const [semester, setSemester] = useState('1');
   
-  // States
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState(location.state?.successMessage || '');
   const [isLoading, setIsLoading] = useState(false);
@@ -37,7 +34,6 @@ export function LoginPage() {
   const { branches } = useBranches();
   const navigate = useNavigate();
 
-  // --- 1. Handle Forgot Password ---
   const handleResetPassword = async (e) => {
     e.preventDefault();
     setErrorMsg('');
@@ -46,11 +42,9 @@ export function LoginPage() {
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + '/update-password', // Where they land after clicking email link
+        redirectTo: window.location.origin + '/update-password', 
       });
-
       if (error) throw error;
-
       setSuccessMsg('Check your email for the password reset link!');
     } catch (error) {
       setErrorMsg(error.message);
@@ -59,19 +53,29 @@ export function LoginPage() {
     }
   };
 
-  // --- 2. Handle Login / Signup ---
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
+    setSuccessMsg(''); 
     setIsLoading(true);
 
     try {
       if (mode === 'login') {
         await logIn(email, password);
+        navigate('/dashboard'); 
       } else {
-        await signUp(email, password, name, branch, semester);
+        const data = await signUp(email, password, name, branch, semester);
+        
+        // If Supabase requires email verification, the session will be null
+        if (data?.user && !data?.session) {
+          setSuccessMsg('Account created! Please check your college email to verify your account.');
+          setMode('login'); // Flip the UI back to the login view
+          setPassword('');  // Clear the password field for security
+        } else {
+          // Fallback just in case email verification gets turned off
+          navigate('/dashboard'); 
+        }
       }
-      navigate('/dashboard'); 
     } catch (error) {
       setErrorMsg(error.message);
     } finally {
@@ -79,198 +83,173 @@ export function LoginPage() {
     }
   };
 
+  // Reusable dark mode classes
+  const inputClass = "bg-[#0a0a0a] border-zinc-800 text-zinc-200 focus:border-teal-500/50 rounded-xl px-4 h-11 w-full outline-none transition-colors";
+  const labelClass = "block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2";
+
   return (
-    <div className="min-h-screen bg-background transition-colors duration-200 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-background to-purple-50 dark:from-blue-950/20 dark:via-background dark:to-purple-950/20 z-0"></div>
+    <div className="min-h-screen bg-[#0a0a0a] text-zinc-100 font-sans flex items-center justify-center p-4 relative overflow-hidden">
       
-      <div className="w-full max-w-6xl grid md:grid-cols-2 gap-8 items-center relative z-10">
+      {/* Background Glowing Orbs (Matches Landing Page) */}
+      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-teal-500/10 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-violet-500/10 rounded-full blur-[120px] pointer-events-none"></div>
+      
+      <div className="w-full max-w-5xl grid md:grid-cols-2 gap-12 items-center relative z-10">
         
         {/* Left Side: Branding (Hidden on mobile) */}
-        <div className="hidden md:block">
-          <div className="space-y-6">
-            <h1 className="text-5xl font-bold text-foreground tracking-tight">
-              Track Your Academic Progress
-            </h1>
-            <p className="text-xl text-muted-foreground">
-              Access syllabus, track your progress, and get AI-powered assistance for your studies.
-            </p>
+        <div className="hidden md:flex flex-col justify-center pr-8">
+          <div className="flex items-center gap-3 mb-8 cursor-pointer" onClick={() => navigate('/')}>
+            <GalleryVerticalEnd size={32} className="text-zinc-100" strokeWidth={1.5} />
+            <span className="font-bold text-2xl tracking-tight bg-gradient-to-r from-teal-400 to-emerald-500 bg-clip-text text-transparent">
+              RetroPrep
+            </span>
           </div>
+          
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-800/50 border border-zinc-700/50 mb-6 text-xs font-medium text-zinc-300 w-fit">
+            <Sparkles className="w-4 h-4 text-teal-400" />
+            <span>Welcome to the workspace</span>
+          </div>
+          
+          <h1 className="text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-6 leading-[1.1]">
+            Track your academic progress. <br/>
+            <span className="text-zinc-500">Protect your peace.</span>
+          </h1>
+          
+          <p className="text-lg text-zinc-400 leading-relaxed">
+            Access your exact syllabus, break down complex subjects into daily tasks, and get instant feedback from your AI Tutor.
+          </p>
         </div>
 
         {/* Right Side: Form Card */}
-        <Card className="p-8 shadow-xl border-border bg-card/50 backdrop-blur-sm">
-          <div className="space-y-6">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold text-foreground">
+        <div className="bg-[#18181b] border border-zinc-800/60 p-8 sm:p-10 rounded-[2.5rem] shadow-2xl relative">
+          
+          <div className="md:hidden flex items-center justify-center gap-2 mb-8" onClick={() => navigate('/')}>
+            <GalleryVerticalEnd size={24} className="text-zinc-100" strokeWidth={1.5} />
+            <span className="font-bold text-xl tracking-tight bg-gradient-to-r from-teal-400 to-emerald-500 bg-clip-text text-transparent">
+              RetroPrep
+            </span>
+          </div>
+
+          <div className="space-y-8">
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-2">
                 {mode === 'login' && 'Welcome Back'}
-                {mode === 'signup' && 'Get Started'}
+                {mode === 'signup' && 'Create your account'}
                 {mode === 'forgot' && 'Reset Password'}
               </h2>
-              <p className="text-muted-foreground mt-2">
-                {mode === 'login' && 'Login to your account'}
-                {mode === 'signup' && 'Create your account'}
-                {mode === 'forgot' && 'Enter your email to receive a reset link'}
+              <p className="text-sm text-zinc-400">
+                {mode === 'login' && 'Sign in to access your dashboard.'}
+                {mode === 'signup' && 'Join the ultimate engineering workspace.'}
+                {mode === 'forgot' && 'Enter your email to receive a secure link.'}
               </p>
             </div>
 
             {/* Messages */}
             {errorMsg && (
-              <div className="p-3 bg-destructive/10 border border-destructive/20 text-destructive rounded-md text-sm text-center font-medium">
+              <div className="p-4 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-xl text-sm font-medium">
                 {errorMsg}
               </div>
             )}
             {successMsg && (
-              <div className="p-3 bg-green-500/10 border border-green-500/20 text-green-600 rounded-md text-sm text-center font-medium">
+              <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl text-sm font-medium">
                 {successMsg}
               </div>
             )}
 
             {/* --- FORGOT PASSWORD FORM --- */}
             {mode === 'forgot' ? (
-              <form onSubmit={handleResetPassword} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="reset-email">Email Address</Label>
-                  <Input
-                    id="reset-email"
-                    type="email"
-                    placeholder="student@college.edu"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="bg-background"
-                  />
+              <form onSubmit={handleResetPassword} className="space-y-5">
+                <div>
+                  <Label htmlFor="reset-email" className={labelClass}>Email Address</Label>
+                  <Input id="reset-email" type="email" placeholder="student@college.edu" value={email} onChange={(e) => setEmail(e.target.value)} required className={inputClass} />
                 </div>
-                <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
-                  {isLoading ? 'Sending Link...' : 'Send Reset Link'}
+                <Button type="submit" className="w-full h-12 bg-gradient-to-r from-teal-400 to-emerald-600 hover:from-teal-500 hover:to-emerald-700 text-white rounded-xl font-bold shadow-[0_0_15px_rgba(20,184,166,0.3)] transition-all" disabled={isLoading}>
+                  {isLoading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : 'Send Reset Link'}
                 </Button>
-                <button
-                  type="button"
-                  onClick={() => { setMode('login'); setSuccessMsg(''); setErrorMsg(''); }}
-                  className="w-full text-sm text-muted-foreground hover:text-foreground mt-4"
-                >
-                  Back to Login
+                <button type="button" onClick={() => { setMode('login'); setSuccessMsg(''); setErrorMsg(''); }} className="w-full text-sm font-semibold text-zinc-500 hover:text-white transition-colors mt-2">
+                  Back to Sign In
                 </button>
               </form>
             ) : (
               
               /* --- LOGIN / SIGNUP FORM --- */
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-5">
                 {mode === 'signup' && (
-                  <>
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Full Name</Label>
-                      <Input
-                        id="name"
-                        type="text"
-                        placeholder="Akash"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        required
-                        className="bg-background"
-                      />
+                  <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    <div>
+                      <Label htmlFor="name" className={labelClass}>Full Name</Label>
+                      <Input id="name" type="text" placeholder="John Doe" value={name} onChange={(e) => setName(e.target.value)} required className={inputClass} />
                     </div>
                     
-                    {/* Branch & Semester Selectors */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>Branch</Label>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label className={labelClass}>Branch</Label>
                         <Select value={branch} onValueChange={setBranch} required>
-                          <SelectTrigger className="bg-background border-border">
-                            <SelectValue placeholder="Select" />
-                          </SelectTrigger>
-                          <SelectContent>
+                          <SelectTrigger className={inputClass}><SelectValue placeholder="Select" /></SelectTrigger>
+                          <SelectContent className="bg-[#18181b] border-zinc-800 text-zinc-200">
                             {branches.map((b) => (
-                              <SelectItem key={b.id} value={b.name}>
-                                {b.short_code || b.name}
-                              </SelectItem>
+                              <SelectItem key={b.id} value={b.name} className="hover:bg-zinc-800 cursor-pointer">{b.short_code || b.name}</SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
                       </div>
-
-                      <div className="space-y-2">
-                        <Label>Semester</Label>
+                      <div>
+                        <Label className={labelClass}>Semester</Label>
                         <Select value={semester} onValueChange={setSemester} required>
-                          <SelectTrigger className="bg-background border-border">
-                            <SelectValue placeholder="Sem" />
-                          </SelectTrigger>
-                          <SelectContent>
+                          <SelectTrigger className={inputClass}><SelectValue placeholder="Sem" /></SelectTrigger>
+                          <SelectContent className="bg-[#18181b] border-zinc-800 text-zinc-200">
                             {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
-                              <SelectItem key={s} value={s.toString()}>
-                                {s}
-                              </SelectItem>
+                              <SelectItem key={s} value={s.toString()} className="hover:bg-zinc-800 cursor-pointer">{s}</SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
                       </div>
                     </div>
-                  </>
+                  </div>
                 )}
 
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="student@college.edu"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    pattern="^[0-9]+@nitkkr\.ac\.in$"
-                    title="Please enter a valid NIT Kurukshetra student email"
-                    className="bg-background"
-                  />
+                <div>
+                  <Label htmlFor="email" className={labelClass}>College Email</Label>
+                  <Input id="email" type="email" placeholder="student@nitkkr.ac.in" value={email} onChange={(e) => setEmail(e.target.value)} required pattern="^[0-9]+@nitkkr\.ac\.in$" title="Please enter a valid NIT Kurukshetra student email" className={inputClass} />
                 </div>
 
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <Label htmlFor="password">Password</Label>
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <Label htmlFor="password" className={`${labelClass} mb-0`}>Password</Label>
                     {mode === 'login' && (
-                      <button
-                        type="button"
-                        onClick={() => setMode('forgot')}
-                        className="text-xs text-primary hover:underline"
-                      >
+                      <button type="button" onClick={() => setMode('forgot')} className="text-xs font-bold text-teal-500 hover:text-teal-400 transition-colors">
                         Forgot Password?
                       </button>
                     )}
                   </div>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    className="bg-background"
-                  />
+                  <Input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required className={inputClass} />
                 </div>
 
-                <Button type="submit" className="w-full mt-2" size="lg" disabled={isLoading}>
-                  {isLoading ? 'Processing...' : (mode === 'login' ? 'Login' : 'Sign Up')}
+                <Button type="submit" className="w-full h-12 mt-2 bg-gradient-to-r from-teal-400 to-emerald-600 hover:from-teal-500 hover:to-emerald-700 text-white rounded-xl font-bold shadow-[0_0_15px_rgba(20,184,166,0.3)] transition-all flex items-center justify-center gap-2" disabled={isLoading}>
+                  {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
+                  {isLoading ? 'Processing...' : (mode === 'login' ? 'Sign In' : 'Create Account')}
                 </Button>
               </form>
             )}
 
             {/* Toggle Login/Signup */}
             {mode !== 'forgot' && (
-              <div className="text-center">
+              <div className="text-center pt-2">
                 <button
                   type="button"
-                  onClick={() => {
-                    setMode(mode === 'login' ? 'signup' : 'login');
-                    setErrorMsg('');
-                  }}
-                  className="text-primary hover:underline text-sm font-medium transition-colors"
+                  onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setErrorMsg(''); }}
+                  className="text-sm font-medium text-zinc-400 hover:text-white transition-colors"
                 >
-                  {mode === 'login'
-                    ? "Don't have an account? Sign up"
-                    : 'Already have an account? Login'}
+                  {mode === 'login' ? (
+                    <>Don't have an account? <span className="text-teal-500 font-bold">Sign up</span></>
+                  ) : (
+                    <>Already have an account? <span className="text-teal-500 font-bold">Sign in</span></>
+                  )}
                 </button>
               </div>
             )}
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   );
