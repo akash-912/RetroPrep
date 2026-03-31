@@ -1,6 +1,6 @@
 import { LogOut, User, BookOpen, Brain, Home, CalendarDays, Menu, Heart } from 'lucide-react';
 import { usePlanner } from "../../features/daily-planner/context/PlannerContext.jsx";
-
+import { GalleryVerticalEnd } from 'lucide-react';
 export function Navbar({ currentPage, onNavigate, isLoggedIn, onLogout, userName, openPlanner }) {
   if (!isLoggedIn) return null;
   const { completedTasks, totalTasks, streak } = usePlanner();
@@ -22,10 +22,10 @@ export function Navbar({ currentPage, onNavigate, isLoggedIn, onLogout, userName
           
           {/* Mobile Logo */}
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => onNavigate('dashboard')}>
-            <div className="w-8 h-8 bg-gradient-to-br from-teal-400 to-emerald-600 rounded-lg flex items-center justify-center font-bold text-white shadow-sm">
-              E
-            </div>
-            <h1 className="text-lg font-bold text-white tracking-tight">EduTrack</h1>
+              <GalleryVerticalEnd size={24} className="text-zinc-100" strokeWidth={1.5} />
+              <span className="font-bold font-sans text-xl tracking-tight bg-gradient-to-r from-teal-400 to-emerald-500 bg-clip-text text-transparent">
+                RetroPrep
+              </span>
           </div>
           
           {/* Mobile Hamburger Menu */}

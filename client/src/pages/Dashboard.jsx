@@ -211,7 +211,7 @@ export function Dashboard({ userName, userBranch, userSemester, onNavigate,openP
           <div className="bg-[#18181b] border border-zinc-800/80 rounded-[1.5rem] p-6 mb-4 shadow-lg shadow-black/20">
             <div className="flex justify-between items-center mb-6">
               <span className="font-bold text-xs tracking-wider uppercase text-zinc-300 bg-zinc-800/80 px-3 py-1.5 rounded-full">Overview</span>
-              <MoreVertical size={16} className="text-zinc-500" />
+              {/* <MoreVertical size={16} className="text-zinc-500" /> */}
             </div>
             
             <div className="flex items-center gap-6">
